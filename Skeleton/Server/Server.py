@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 import SocketServer
+import json
+import time
 
 """
 Variables and functions that must be used by all the ClientHandler objects
 must be written here (e.g. a dictionary for connected clients)
 """
+
+messageQueue = []
+history = []
 
 class ClientHandler(SocketServer.BaseRequestHandler):
     """
@@ -22,11 +27,25 @@ class ClientHandler(SocketServer.BaseRequestHandler):
         self.port = self.client_address[1]
         self.connection = self.request
 
+
+
         # Loop that listens for messages from the client
+
+        #Local
+
         while True:
             received_string = self.connection.recv(4096)
-            
             # TODO: Add handling of received payload from client
+            msgTimestamp = time.ctime()
+            recvDict = received_string.dumps(dict)
+
+            
+
+            """
+            Locic for queuing the message sending. Needs a global counter and
+            a local threadspecific counter
+            """
+            #local 
 
 
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
