@@ -7,7 +7,12 @@ class Client:
     """
     This is the chat client class
     """
-
+	
+	def rawInput()
+		request = raw_input("Request type: ");
+		content = raw_input("Content: ");
+		
+	
     def __init__(self, host, server_port):
         """
         This method is run when creating a new Client object
