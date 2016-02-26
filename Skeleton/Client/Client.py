@@ -15,7 +15,7 @@ class Client:
 	def disconnect(self):
 		self.connection.close()
 		
-	def rawInput()
+	def rawInput():
 		request = raw_input("Request type: ");
 		content = raw_input("Content: ");
 		self.jsonObject = json.dumps({'request': request, 'content': content}, indent=4)
@@ -29,7 +29,7 @@ class Client:
 
 if __name__ == '__main__':
 	client = Client('localhost', 9998)
-	client.
+	client.receiveMessage()
 	while True:
 		client.rawInput()
 		client.send()
