@@ -8,8 +8,12 @@ Variables and functions that must be used by all the ClientHandler objects
 must be written here (e.g. a dictionary for connected clients)
 """
 
-messageQueue = []
+port = "12000"
+messageQueue = []	
 history = []
+userNames = []
+counter = 0
+self.lock = threading.Lock()
 
 class ClientHandler(SocketServer.BaseRequestHandler):
     """
@@ -18,26 +22,30 @@ class ClientHandler(SocketServer.BaseRequestHandler):
     only connected clients, and not the server itself. If you want to write
     logic for the server, you must write it outside this class
     """
-
     def handle(self):
-        """
-        This method handles the connection between a client and the server.
-        """
         self.ip = self.client_address[0]
         self.port = self.client_address[1]
         self.connection = self.request
-
-
-
         # Loop that listens for messages from the client
 
         #Local
 
         while True:
-            received_string = self.connection.recv(4096)
+            receivedString = self.connection.recv(4096)
             # TODO: Add handling of received payload from client
+			jsonParser = json.loads(receivedString)
+			clientRequest = jsonParser['request']
+			if clientRequest == 'login':
+			elif clientRequest == 'logout':
+			elif clientRequest == 'msg':
+			elif clientRequest == 'names':
+			elif clientRequest == 'help':
+			
+			
+			
             msgTimestamp = time.ctime()
             recvDict = received_string.dumps(dict)
+			jsonObject = json.dumps({'timestamp': msgTimestamp, 'sender': content}, indent=4)
 
             
 
@@ -55,6 +63,8 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 
     No alterations are necessary
     """
+	
+	
     allow_reuse_address = True
 
 if __name__ == "__main__":
