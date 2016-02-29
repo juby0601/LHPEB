@@ -15,12 +15,19 @@ class Client:
 
 	def disconnect(self):
 		self.connection.close()
-		self.messageReceiver.stop()
-		
+		try:
+			self.messageReceiver.stop()
+		except:
+			pass
 	def rawInput(self):
-		request = raw_input("Request type: ");
-		content = raw_input("Content: ");
-		self.jsonObject = json.dumps({'request': request, 'content': content}, indent=4)
+		request = raw_input("Request type: ")
+		if(request in ["login", "msg"]):	
+			content = raw_input("Content: ")
+			self.jsonObject = json.dumps({'request': request, 'content': content}, indent=4)
+		else:
+			self.jsonObject = json.dumps({'request': request}, indent=4)
+		return request
+
 
 	def receiveMessage(self):
 		self.messageReceiver = MessageReceiver(self.connection)
@@ -33,11 +40,10 @@ if __name__ == '__main__':
 	client = Client('localhost', 9998)
 	client.receiveMessage()
 	while True:
-		client.rawInput()
+		logout = client.rawInput()
 		client.send()
-		time.sleep(1)
-		disconnection = raw_input("Want to disconnect? if so type c: ");
-		if disconnection == 'c':
+		if(logout == "logout"):
+			time.sleep(0.5)
 			client.disconnect()
 			break
-	print 'wasup'
+		time.sleep(0.4)

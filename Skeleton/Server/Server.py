@@ -46,27 +46,32 @@ class ClientHandler(Thread):
 			jsonParser = json.loads(receivedString)
 			clientRequest = jsonParser['request']
 			if clientRequest == 'login':
-				if jsonParser['content'] in userNames:
-					jsonSender = json.dumps({'timestamp': msgTimestamp, 'response': 'Error', 'content': 'Username already exists'}, indent=4)
+				if(self.userName != ''):
+					jsonSender = json.dumps({'timestamp': msgTimestamp, 'response': 'Error', 'content': 'Allready logged in'}, indent=4)
 					self.connection.send(jsonSender)
 				else:
-					validMessage = 1
-					for c in jsonParser['content']:
-						if ord(c) > 122 or ord(c) < 48:
-							jsonSender = json.dumps({'timestamp': msgTimestamp, 'response': 'Error', 'content': 'Invalid username'}, indent=4)
-							self.connection.send(jsonSender)
-							validMessage = 0
-							break
-					if validMessage == 1:		
-						jsonSender = json.dumps({'timestamp': msgTimestamp, 'sender':jsonParser['content'] ,'response': 'login', 'content': 'Succesfully logged in'}, indent=4)
+
+					if jsonParser['content'] in userNames:
+						jsonSender = json.dumps({'timestamp': msgTimestamp, 'response': 'Error', 'content': 'Username already exists'}, indent=4)
 						self.connection.send(jsonSender)
-						userNames.append(jsonParser['content'])
-						self.userName = jsonParser['content']
+					else:
+						validMessage = 1
+						for c in jsonParser['content']:
+							if ord(c) > 122 or ord(c) < 48:
+								jsonSender = json.dumps({'timestamp': msgTimestamp, 'response': 'Error', 'content': 'Invalid username'}, indent=4)
+								self.connection.send(jsonSender)
+								validMessage = 0
+								break
+						if validMessage == 1:		
+							jsonSender = json.dumps({'timestamp': msgTimestamp, 'sender':jsonParser['content'] , 'content': 'Succesfully logged in'}, indent=4)
+							self.connection.send(jsonSender)
+							userNames.append(jsonParser['content'])
+							self.userName = jsonParser['content']
 
 				history.append(jsonSender)
 			elif clientRequest == 'logout':
 				if self.userName in userNames:
-					jsonSender = json.dumps({'timestamp': msgTimestamp,'response': 'logout', 'content': 'Succesfully logged out'}, indent=4)
+					jsonSender = json.dumps({'timestamp': msgTimestamp, 'content': 'Succesfully logged out'}, indent=4)
 					self.connection.send(jsonSender);
 					history.append(jsonSender)
 					userNames.pop(userNames.index(self.userName))
@@ -76,6 +81,7 @@ class ClientHandler(Thread):
 			elif clientRequest == 'msg':
 				if(self.userName not in userNames):
 					jsonSender = json.dumps({'timestamp': msgTimestamp, 'response': 'Error', 'content': 'Not logged in'}, indent=4)
+					self.connection.send(jsonSender)
 				else:
 					#TODO: counter should obviously be an int, but the logic to find it might be hard
 					jsonSender = json.dumps({'timestamp': msgTimestamp, 'sender':self.userName, 'response': 'Message', 'content': jsonParser['content']}, indent=4)
@@ -92,6 +98,11 @@ class ClientHandler(Thread):
 				jsonSender = json.dumps({'timestamp': msgTimestamp ,'response': 'help', 'content': self.help}, indent=4)
 				self.connection.send(jsonSender)
 				history.append(jsonSender)
+			elif clientRequest == 'history':
+				histories = "\n".join(history)
+				jsonSender = json.dumps({'timestamp': msgTimestamp ,'response': 'histories', 'content': histories}, indent=4)
+				self.connection.send(jsonSender)
+
 		print 'LOL'	
 
 if __name__ == "__main__":
