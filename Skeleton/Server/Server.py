@@ -7,7 +7,6 @@ import time
 Variables and functions that must be used by all the ClientHandler objects
 must be written here (e.g. a dictionary for connected clients)
 """
-
 port = "12000"
 messageQueue = []	
 history = []
@@ -26,26 +25,30 @@ class ClientHandler(SocketServer.BaseRequestHandler):
         self.ip = self.client_address[0]
         self.port = self.client_address[1]
         self.connection = self.request
+		self.userName = ''
         # Loop that listens for messages from the client
 
         #Local
 
         while True:
-            receivedString = self.connection.recv(4096)
+            recvDict = received_string.dumps(dict)
+			receivedString = self.connection.recv(4096)
             # TODO: Add handling of received payload from client
+			msgTimestamp = time.ctime()
 			jsonParser = json.loads(receivedString)
 			clientRequest = jsonParser['request']
 			if clientRequest == 'login':
+				if jsonParser['content'] in userNames
+					self.connection.send(json.dumps({'timestamp': msgTimestamp, 'reponse': 'Error', 'content': 'Username already exists'}, indent=4));
+				else
+					
 			elif clientRequest == 'logout':
+				
 			elif clientRequest == 'msg':
+				
 			elif clientRequest == 'names':
+				
 			elif clientRequest == 'help':
-			
-			
-			
-            msgTimestamp = time.ctime()
-            recvDict = received_string.dumps(dict)
-			jsonObject = json.dumps({'timestamp': msgTimestamp, 'sender': content}, indent=4)
 
             
 
