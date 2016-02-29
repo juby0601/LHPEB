@@ -38,10 +38,18 @@ class ClientHandler(SocketServer.BaseRequestHandler):
 			jsonParser = json.loads(receivedString)
 			clientRequest = jsonParser['request']
 			if clientRequest == 'login':
-				if jsonParser['content'] in userNames
-					self.connection.send(json.dumps({'timestamp': msgTimestamp, 'reponse': 'Error', 'content': 'Username already exists'}, indent=4));
+				if jsonParser['content'] in userNames:
+					jsonSender = json.dumps({'timestamp': msgTimestamp, 'reponse': 'Error', 'content': 'Username already exists'}, indent=4)
+					self.connection.send(jsonSender);
 				else
-					
+					for c in jsonParser['content']:
+						if ord(c) > 122 and ord(c) < 65:
+							jsonSender = json.dumps({'timestamp': msgTimestamp, 'reponse': 'Error', 'content': 'Invalid username'}, indent=4)
+							self.connection.send(jsonSender);
+							break
+					jsonSender = json.dumps({'timestamp': msgTimestamp, 'Sender':jsonParser['content'] ,'reponse': 'login', 'content': 'Succesfully logged in'}, indent=4)
+					self.connection.send(jsonSender);
+				history.append[jsonSender]
 			elif clientRequest == 'logout':
 				
 			elif clientRequest == 'msg':
@@ -49,6 +57,7 @@ class ClientHandler(SocketServer.BaseRequestHandler):
 			elif clientRequest == 'names':
 				
 			elif clientRequest == 'help':
+				
 
             
 
