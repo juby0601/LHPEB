@@ -21,7 +21,11 @@ class MessageReceiver(Thread):
 				print 'Connection lost'
 				break
 			jsonObject = json.loads(data)
-			print jsonObject['timestamp']
-			print jsonObject['sender']
-			print jsonObject['response']
-			print jsonObject['content']
+			if 'sender' in jsonObject:
+				print jsonObject['sender']
+			if 'timestamp' in jsonObject:
+				print jsonObject['timestamp']
+			if 'response' in jsonObject:
+				print jsonObject['response']
+			if 'content' in jsonObject:
+				print jsonObject['content']

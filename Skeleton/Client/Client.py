@@ -33,7 +33,7 @@ if __name__ == '__main__':
 	while True:
 		client.rawInput()
 		client.send()
-		disconnection = raw_input("Want to disconnect? if so type c ");
+		disconnection = raw_input("Want to disconnect? if so type c \n");
 		if disconnection == 'c':
 			client.disconnect()
 			break
