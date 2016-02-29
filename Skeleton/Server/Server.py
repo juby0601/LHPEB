@@ -58,10 +58,20 @@ class ClientHandler(SocketServer.BaseRequestHandler):
 						jsonSender = json.dumps({'timestamp': msgTimestamp, 'Sender':jsonParser['content'] ,'reponse': 'login', 'content': 'Succesfully logged in'}, indent=4)
 						self.connection.send(jsonSender);
 						userNames.append(jsonParser['content'])
+<<<<<<< HEAD
 				history.append[jsonSender]
 
+=======
+				history.append(jsonSender)
+>>>>>>> 7f1639985e3d6ee362b3367593a4a1cf339b462e
 			elif clientRequest == 'logout':
-				
+				if self.userName in userNames:
+					jsonSender = json.dumps({'timestamp': msgTimestamp,'reponse': 'logout', 'content': 'Succesfully logged out'}, indent=4)
+					self.connection.send(jsonSender);
+					history.append(jsonSender)
+					userNames.pop(userNames.index(self.userName))
+					self.connection.close()
+					break
 			elif clientRequest == 'msg':
                 #TODO: If client not logged in, send back: "error: not logged in"
 
@@ -72,11 +82,19 @@ class ClientHandler(SocketServer.BaseRequestHandler):
 
 
 			elif clientRequest == 'names':
+<<<<<<< HEAD
 				allNames = "\n".join(userNames)
 				jsonSender = json.dumps({'timestamp': msgTimestamp ,'reponse': 'names', 'content': allNames}, indent=4)
 				self.connection.send(jsonSender)
 				history.append[jsonSender]
 
+=======
+				if self.userName in userNames:
+					allNames = "\n".join(userNames)
+					jsonSender = json.dumps({'timestamp': msgTimestamp ,'reponse': 'names', 'content': allNames}, indent=4)
+					self.connection.send(jsonSender)
+					history.append[jsonSender]
+>>>>>>> 7f1639985e3d6ee362b3367593a4a1cf339b462e
 			elif clientRequest == 'help':
 				jsonSender = json.dumps({'timestamp': msgTimestamp ,'reponse': 'help', 'content': self.help}, indent=4)
 				self.connection.send(jsonSender)
