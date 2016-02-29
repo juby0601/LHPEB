@@ -14,6 +14,8 @@ messageQueue = []
 history = []
 userNames = []
 counter = 0
+connections = []
+
 
 class ClientHandler(Thread):
 	"""
@@ -61,15 +63,17 @@ class ClientHandler(Thread):
 					history.append(jsonSender)
 					userNames.pop(userNames.index(self.userName))
 					self.connection.close()
+					connections.pop(self.connection)
 					break
 			elif clientRequest == 'msg':
 				if(self.userName not in userNames):
 					jsonSender = json.dumps({'timestamp': msgTimestamp, 'response': 'Error', 'content': 'Not logged in'}, indent=4)
 				else:
 					#TODO: counter should obviously be an int, but the logic to find it might be hard
-					counter = "Nr of active connections to clients" 
 					jsonSender = json.dumps({'timestamp': msgTimestamp, 'sender':jsonParser['sender'], 'response': 'Message', 'content': jsonParser['content']}, indent=4)
-					messageQueue.append([jsonParser, counter])
+					for connection in connections:
+						self.connection.send(jsonSender)
+
 				self.connection.send(jsonSender)
 				history.append(jsonSender)
 			elif clientRequest == 'names':
@@ -96,8 +100,7 @@ if __name__ == "__main__":
 	serverSocket = socket(AF_INET,SOCK_STREAM)
 	serverSocket.bind(('',PORT))
 	serverSocket.listen(100)
-	threadCounter = 0
 	while True:
 		connection, addr = serverSocket.accept()
-		threadCounter += 1
+		connections.append(connection)
 		ClientHandler(connection).start()
