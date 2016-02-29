@@ -11,7 +11,6 @@ class MessageReceiver(Thread):
 
     def __init__(self, connection):
         self.connection = connection
-        self.daemon = True
 
     def run(self):
         while True:

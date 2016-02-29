@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from threading import Thread, Lock
 import SocketServer
+from socket import *
 import json
 import time
 
@@ -14,21 +15,25 @@ history = []
 userNames = []
 counter = 0
 
-class ClientHandler(SocketServer.BaseRequestHandler):
+class ClientHandler:
 	"""
 	This is the ClientHandler class. Everytime a new client connects to the
 	server, a new ClientHandler object will be created. This class represents
 	only connected clients, and not the server itself. If you want to write
 	logic for the server, you must write it outside this class
 	"""
-	def handle(self):
-		self.ip = self.client_address[0]
-		self.port = self.client_address[1]
-		self.connection = self.request
+	def __init__(self, host, serverport):
+		self.serverport = serverport
+		self.host = host
+		self.serverSocket = socket(AF_INET,SOCK_STREAM)
+		self.serverSocket.bind(('',self.serverport))
+		self.serverSocket.listen(1)
+		self.connection, addr = self.serverSocket.accept()
+	
+	def messageHandler(self):
 		self.userName = ''
 		self.help = 'login <username> - log in with the given username\nlogout - log out\nmsg <message> - send message\nnames - list users in chat\nhelp - view help text'
 		while True:
-			recvDict = received_string.dumps(dict)
 			receivedString = self.connection.recv(4096)
 			# TODO: Add handling of received payload from client
 			msgTimestamp = time.ctime()
@@ -78,31 +83,12 @@ class ClientHandler(SocketServer.BaseRequestHandler):
 				self.connection.send(jsonSender)
 				history.append[jsonSender]
 			
-
 			"""
 			Locic for queuing the message sending. Needs a global counter and
 			a local threadspecific counter
 			"""
 
-			
-		   
-
-			#local 
-
-
-class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
-	"""
-	This class is present so that each client connected will be ran as a own
-	thread. In that way, all clients will be served by the server.
-
-	No alterations are necessary
-	"""
-	
-	
-	allow_reuse_address = True
-
 if __name__ == "__main__":
-	print 'Server running...'
 	"""
 	This is the main method and is executed when you type "python Server.py"
 	in your terminal.
@@ -113,5 +99,6 @@ if __name__ == "__main__":
 	print 'Server running...'
 
 	# Set up and initiate the TCP server
-	server = ThreadedTCPServer((HOST, PORT), ClientHandler)
-	server.serve_forever()
+	clientHandler = ClientHandler(HOST,PORT)
+	print 'WOWOWOWOW'
+	clientHandler.messageHandler()
