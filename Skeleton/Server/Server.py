@@ -30,7 +30,11 @@ class ClientHandler(Thread):
 		self.userName = ''
 		self.help = 'login <username> - log in with the given username\nlogout - log out\nmsg <message> - send message\nnames - list users in chat\nhelp - view help text'
 		while True:
-			receivedString = self.connection.recv(4096)
+			try:
+				receivedString = self.connection.recv(4096)
+			except:
+				print 'Connection lost'
+				break
 			# TODO: Add handling of received payload from client
 			msgTimestamp = time.ctime()
 			jsonParser = json.loads(receivedString)
