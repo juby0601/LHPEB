@@ -38,6 +38,8 @@ class ClientHandler(Thread):
 				receivedString = self.connection.recv(4096)
 			except:
 				print 'Connection lost'
+				userNames.pop(userNames.index(self.userName))
+				connections.remove(self.connection)
 				break
 			# TODO: Add handling of received payload from client
 			msgTimestamp = time.ctime()
@@ -69,18 +71,16 @@ class ClientHandler(Thread):
 					history.append(jsonSender)
 					userNames.pop(userNames.index(self.userName))
 					self.connection.close()
-					connections.pop(self.connection)
+					connections.remove(self.connection)
 					break
 			elif clientRequest == 'msg':
 				if(self.userName not in userNames):
 					jsonSender = json.dumps({'timestamp': msgTimestamp, 'response': 'Error', 'content': 'Not logged in'}, indent=4)
 				else:
 					#TODO: counter should obviously be an int, but the logic to find it might be hard
-					jsonSender = json.dumps({'timestamp': msgTimestamp, 'sender':jsonParser['sender'], 'response': 'Message', 'content': jsonParser['content']}, indent=4)
+					jsonSender = json.dumps({'timestamp': msgTimestamp, 'sender':self.userName, 'response': 'Message', 'content': jsonParser['content']}, indent=4)
 					for connection in connections:
 						self.connection.send(jsonSender)
-
-				self.connection.send(jsonSender)
 				history.append(jsonSender)
 			elif clientRequest == 'names':
 				if self.userName in userNames:
