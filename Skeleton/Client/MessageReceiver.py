@@ -10,7 +10,8 @@ class MessageReceiver(Thread):
     """
 
     def __init__(self, connection):
-        self.connection = connection
+		super(MessageReceiver, self).__init__()
+		self.connection = connection
 
     def run(self):
         while True:

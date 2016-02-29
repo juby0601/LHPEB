@@ -15,7 +15,7 @@ class Client:
 	def disconnect(self):
 		self.connection.close()
 		
-	def rawInput():
+	def rawInput(self):
 		request = raw_input("Request type: ");
 		content = raw_input("Content: ");
 		self.jsonObject = json.dumps({'request': request, 'content': content}, indent=4)
@@ -34,6 +34,6 @@ if __name__ == '__main__':
 		client.rawInput()
 		client.send()
 		disconnection = raw_input("Want to disconnect? if so type c ");
-		if disconnection == c:
+		if disconnection == 'c':
 			client.disconnect()
 			break
