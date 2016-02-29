@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from threading import Thread, Lock
 import SocketServer
 import json
 import time
@@ -12,7 +13,6 @@ messageQueue = []
 history = []
 userNames = []
 counter = 0
-self.lock = threading.Lock()
 
 class ClientHandler(SocketServer.BaseRequestHandler):
 	"""
@@ -26,7 +26,6 @@ class ClientHandler(SocketServer.BaseRequestHandler):
 		self.port = self.client_address[1]
 		self.connection = self.request
 		self.userName = ''
-
 		self.help = 'login <username> - log in with the given username\nlogout - log out\nmsg <message> - send message\nnames - list users in chat\nhelp - view help text'
 		while True:
 			recvDict = received_string.dumps(dict)
@@ -39,7 +38,7 @@ class ClientHandler(SocketServer.BaseRequestHandler):
 				if jsonParser['content'] in userNames:
 					jsonSender = json.dumps({'timestamp': msgTimestamp, 'reponse': 'Error', 'content': 'Username already exists'}, indent=4)
 					self.connection.send(jsonSender)
-				else
+				else:
 					validMessage = 1
 					for c in jsonParser['content']:
 						if ord(c) > 122 and ord(c) < 65:
@@ -68,8 +67,6 @@ class ClientHandler(SocketServer.BaseRequestHandler):
 				counter = "Nr of active connections to clients" 
 				jsonMessage = json.dump({'timestamp': msgTimestamp, 'content': jsonParser['content']})
 				messageQueue.append([jsonParser, counter])
-
-
 			elif clientRequest == 'names':
 				if self.userName in userNames:
 					allNames = "\n".join(userNames)
@@ -105,6 +102,7 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 	allow_reuse_address = True
 
 if __name__ == "__main__":
+	print 'Server running...'
 	"""
 	This is the main method and is executed when you type "python Server.py"
 	in your terminal.
