@@ -13,6 +13,7 @@ port = "12000"
 messageQueue = []
 history = []
 userNames = []
+blackList = ["PJ", "PER", "Per", "pj"]
 counter = 0
 
 connections = []
@@ -37,9 +38,12 @@ class ClientHandler(Thread):
 			try:
 				receivedString = self.connection.recv(4096)
 			except:
-				print 'Connection lost'
-				userNames.pop(userNames.index(self.userName))
-				connections.remove(self.connection)
+				try:
+					userNames.remove(self.userName)
+					connections.remove(self.connection)
+				except:
+					pass
+
 				break
 			# TODO: Add handling of received payload from client
 			msgTimestamp = time.ctime()
@@ -62,15 +66,20 @@ class ClientHandler(Thread):
 								self.connection.send(jsonSender)
 								validMessage = 0
 								break
-						if validMessage == 1:		
-							jsonSender = json.dumps({'timestamp': msgTimestamp, 'sender':jsonParser['content'] , 'content': 'Succesfully logged in'}, indent=4)
-							self.connection.send(jsonSender)
-							userNames.append(jsonParser['content'])
-							self.userName = jsonParser['content']
-							if history:
-								histories = "\n".join(history)
-								jsonSender = json.dumps({'timestamp': msgTimestamp ,'response': 'histories', 'content': histories}, indent=4)
-								self.connection.send(jsonSender)	
+						if validMessage == 1:
+							if(jsonParser['content'] in blackList):
+								jsonSender = json.dumps({'timestamp': msgTimestamp, 'sender': "From: Admin", 'response': 'error', 'content': 'Blacklisted username'}, indent=4)
+								self.connection.send(jsonSender)
+							else:
+								jsonSender = json.dumps({'timestamp': msgTimestamp, 'sender':jsonParser['content'] , 'content': 'Succesfully logged in'}, indent=4)
+								self.connection.send(jsonSender)
+								userNames.append(jsonParser['content'])
+								connections.append(self.connection)
+								self.userName = jsonParser['content']
+								if history:
+									histories = "\n".join(history)
+									jsonSender = json.dumps({'timestamp': msgTimestamp ,'response': 'histories', 'content': histories}, indent=4)
+									self.connection.send(jsonSender)	
 
 				history.append(jsonSender)
 			elif clientRequest == 'logout':
@@ -88,7 +97,10 @@ class ClientHandler(Thread):
 					self.connection.send(jsonSender)
 				else:
 					#TODO: counter should obviously be an int, but the logic to find it might be hard
+					
 					jsonSender = json.dumps({'timestamp': msgTimestamp, 'sender':self.userName, 'response': 'Message', 'content': jsonParser['content']}, indent=4)
+					print jsonSender
+					print 'Ban: '
 					for connection in connections:
 						if connection != self.connection:
 							connection.send(jsonSender)
@@ -108,7 +120,25 @@ class ClientHandler(Thread):
 				jsonSender = json.dumps({'timestamp': msgTimestamp ,'response': 'histories', 'content': histories}, indent=4)
 				self.connection.send(jsonSender)
 
-		print 'LOL'	
+
+def ban():
+	while True:
+		ban = raw_input("Ban: ")
+		blackList.append(ban)
+		try:
+			index = userNames.index(ban)
+		except:
+			pass
+		tempCon = connections.pop(index)
+		jsonSender = json.dumps({'timestamp': time.ctime(), 'content': "You've been banned"}, indent=4)
+		tempCon.send(jsonSender);
+		history.append(jsonSender)
+		userNames.pop(index)
+		tempCon.close()
+		print tempCon
+
+
+
 
 if __name__ == "__main__":
 	"""
@@ -122,7 +152,13 @@ if __name__ == "__main__":
 	serverSocket = socket(AF_INET,SOCK_STREAM)
 	serverSocket.bind(('',PORT))
 	serverSocket.listen(100)
+
+	thread = Thread(target = ban, args = (), )
+	thread.start()
+
 	while True:
+
 		connection, addr = serverSocket.accept()
-		connections.append(connection)
 		ClientHandler(connection).start()
+
+
