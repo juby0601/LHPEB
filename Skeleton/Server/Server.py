@@ -43,7 +43,6 @@ class ClientHandler(Thread):
 				else:
 					validMessage = 1
 					for c in jsonParser['content']:
-						print ord(c)
 						if ord(c) > 122 or ord(c) < 48:
 							jsonSender = json.dumps({'timestamp': msgTimestamp, 'response': 'Error', 'content': 'Invalid username'}, indent=4)
 							self.connection.send(jsonSender)
@@ -84,7 +83,7 @@ class ClientHandler(Thread):
 				jsonSender = json.dumps({'timestamp': msgTimestamp ,'response': 'help', 'content': self.help}, indent=4)
 				self.connection.send(jsonSender)
 				history.append(jsonSender)
-			
+		print 'LOL'	
 			"""
 			Locic for queuing the message sending. Needs a global counter and
 			a local threadspecific counter
