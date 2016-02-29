@@ -13,7 +13,7 @@ messageQueue = []
 history = []
 userNames = []
 ipAdresses = []
-blackList = ["PJ", "PER", "Per", "pj"]
+blackList = []
 banList = []
 counter = 0
 
@@ -130,6 +130,12 @@ def ban():
 		ban = raw_input("Ban: ")
 		if ban == 'Ban list':
 			print blackList
+		elif ban == 'Unban':
+			bannedUser = raw_input("banned username: ")
+			if bannedUser in blackList:
+				indexOf = blackList.index(bannedUser)
+				blackList.remove(bannedUser)
+				banList.pop(indexOf)
 		else:
 			try:
 				index = userNames.index(ban)
