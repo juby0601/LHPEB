@@ -22,37 +22,33 @@ class ClientHandler(SocketServer.BaseRequestHandler):
     logic for the server, you must write it outside this class
     """
     def handle(self):
-        self.ip = self.client_address[0]
-        self.port = self.client_address[1]
-        self.connection = self.request
+		self.ip = self.client_address[0]
+		self.port = self.client_address[1]
+		self.connection = self.request
 		self.userName = ''
-		self.help = 'login <username> - log in with the given username\nlogout - log out\nmsg <message> - send message\nnames - list users in chat\nhelp - view help text';
-        # Loop that listens for messages from the client
-
-        #Local
-
+		self.help = 'login <username> - log in with the given username\nlogout - log out\nmsg <message> - send message\nnames - list users in chat\nhelp - view help text'
         while True:
-            recvDict = received_string.dumps(dict)
+			recvDict = received_string.dumps(dict)
 			receivedString = self.connection.recv(4096)
-            # TODO: Add handling of received payload from client
+			# TODO: Add handling of received payload from client
 			msgTimestamp = time.ctime()
 			jsonParser = json.loads(receivedString)
 			clientRequest = jsonParser['request']
 			if clientRequest == 'login':
 				if jsonParser['content'] in userNames:
 					jsonSender = json.dumps({'timestamp': msgTimestamp, 'reponse': 'Error', 'content': 'Username already exists'}, indent=4)
-					self.connection.send(jsonSender);
+					self.connection.send(jsonSender)
 				else
 					validMessage = 1
 					for c in jsonParser['content']:
 						if ord(c) > 122 and ord(c) < 65:
 							jsonSender = json.dumps({'timestamp': msgTimestamp, 'reponse': 'Error', 'content': 'Invalid username'}, indent=4)
-							self.connection.send(jsonSender);
+							self.connection.send(jsonSender)
 							validMessage = 0
 							break
 					if validMessage == 1:		
 						jsonSender = json.dumps({'timestamp': msgTimestamp, 'Sender':jsonParser['content'] ,'reponse': 'login', 'content': 'Succesfully logged in'}, indent=4)
-						self.connection.send(jsonSender);
+						self.connection.send(jsonSender)
 						userNames.append(jsonParser['content'])
 				history.append(jsonSender)
 			elif clientRequest == 'logout':
