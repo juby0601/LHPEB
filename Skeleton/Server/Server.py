@@ -14,11 +14,9 @@ messageQueue = []
 history = []
 userNames = []
 counter = 0
-<<<<<<< Updated upstream
+
 connections = []
-=======
-clients = []
->>>>>>> Stashed changes
+
 
 
 class ClientHandler(Thread):
@@ -111,5 +109,4 @@ if __name__ == "__main__":
 	while True:
 		connection, addr = serverSocket.accept()
 		connections.append(connection)
-		clients.append(connection)
 		ClientHandler(connection).start()
