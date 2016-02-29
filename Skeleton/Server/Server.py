@@ -8,7 +8,11 @@ Variables and functions that must be used by all the ClientHandler objects
 must be written here (e.g. a dictionary for connected clients)
 """
 port = "12000"
+<<<<<<< Updated upstream
 messageQueue = []
+=======
+messageQueue = []	#2D array with counter for each message?
+>>>>>>> Stashed changes
 history = []
 userNames = []
 counter = 0
@@ -30,8 +34,8 @@ class ClientHandler(SocketServer.BaseRequestHandler):
         # Loop that listens for messages from the client
 
         #Local
-
-        while True:
+        messageSent = False
+        while True:            
             recvDict = received_string.dumps(dict)
 			receivedString = self.connection.recv(4096)
             # TODO: Add handling of received payload from client
@@ -55,15 +59,24 @@ class ClientHandler(SocketServer.BaseRequestHandler):
 						self.connection.send(jsonSender);
 						userNames.append(jsonParser['content'])
 				history.append[jsonSender]
+
 			elif clientRequest == 'logout':
 				
 			elif clientRequest == 'msg':
-				
+                #TODO: If client not logged in, send back: "error: not logged in"
+
+                #TODO: counter should obviously be an int, but the logic to find it might be hard
+                counter = "Nr of active connections to clients" 
+                jsonMessage = json.dump({'timestamp': msgTimestamp, 'content': jsonParser['content']})
+				messageQueue.append([jsonParser, counter])
+
+
 			elif clientRequest == 'names':
 				allNames = "\n".join(userNames)
 				jsonSender = json.dumps({'timestamp': msgTimestamp ,'reponse': 'names', 'content': allNames}, indent=4)
 				self.connection.send(jsonSender)
 				history.append[jsonSender]
+
 			elif clientRequest == 'help':
 				jsonSender = json.dumps({'timestamp': msgTimestamp ,'reponse': 'help', 'content': self.help}, indent=4)
 				self.connection.send(jsonSender)
@@ -74,6 +87,10 @@ class ClientHandler(SocketServer.BaseRequestHandler):
             Locic for queuing the message sending. Needs a global counter and
             a local threadspecific counter
             """
+
+            
+           
+
             #local 
 
 
