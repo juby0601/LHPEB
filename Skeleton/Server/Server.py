@@ -67,6 +67,10 @@ class ClientHandler(Thread):
 							self.connection.send(jsonSender)
 							userNames.append(jsonParser['content'])
 							self.userName = jsonParser['content']
+							if history:
+								histories = "\n".join(history)
+								jsonSender = json.dumps({'timestamp': msgTimestamp ,'response': 'histories', 'content': histories}, indent=4)
+								self.connection.send(jsonSender)	
 
 				history.append(jsonSender)
 			elif clientRequest == 'logout':
@@ -86,7 +90,8 @@ class ClientHandler(Thread):
 					#TODO: counter should obviously be an int, but the logic to find it might be hard
 					jsonSender = json.dumps({'timestamp': msgTimestamp, 'sender':self.userName, 'response': 'Message', 'content': jsonParser['content']}, indent=4)
 					for connection in connections:
-						connection.send(jsonSender)
+						if connection != self.connection:
+							connection.send(jsonSender)
 				history.append(jsonSender)
 			elif clientRequest == 'names':
 				if self.userName in userNames:
@@ -112,7 +117,7 @@ if __name__ == "__main__":
 
 	No alterations are necessary
 	"""
-	HOST, PORT = 'localhost', 9998
+	HOST, PORT = '78.91.44.102', 9998
 	print 'Server running...'
 	serverSocket = socket(AF_INET,SOCK_STREAM)
 	serverSocket.bind(('',PORT))

@@ -37,7 +37,7 @@ class Client:
 		self.connection.send(self.jsonObject)
 
 if __name__ == '__main__':
-	client = Client('localhost', 9998)
+	client = Client('78.91.44.102', 9998)
 	client.receiveMessage()
 	while True:
 		logout = client.rawInput()
