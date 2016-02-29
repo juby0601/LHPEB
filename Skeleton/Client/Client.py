@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import socket
 import json
+import time
 from MessageReceiver import MessageReceiver
 
 class Client:
@@ -33,7 +34,8 @@ if __name__ == '__main__':
 	while True:
 		client.rawInput()
 		client.send()
-		disconnection = raw_input("Want to disconnect? if so type c \n");
+		time.sleep(1)
+		disconnection = raw_input("Want to disconnect? if so type c: ");
 		if disconnection == 'c':
 			client.disconnect()
 			break

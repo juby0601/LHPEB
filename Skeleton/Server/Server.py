@@ -53,6 +53,7 @@ class ClientHandler(Thread):
 						jsonSender = json.dumps({'timestamp': msgTimestamp, 'sender':jsonParser['content'] ,'response': 'login', 'content': 'Succesfully logged in'}, indent=4)
 						self.connection.send(jsonSender)
 						userNames.append(jsonParser['content'])
+						self.userName = jsonParser['content']
 
 				history.append(jsonSender)
 			elif clientRequest == 'logout':
@@ -72,16 +73,17 @@ class ClientHandler(Thread):
 					jsonSender = json.dumps({'timestamp': msgTimestamp, 'sender':jsonParser['sender'], 'reponse': 'Message', 'content': jsonParser['content']}, indent=4)
 					messageQueue.append([jsonParser, counter])
 				self.connection.send(jsonSender)
+				history.append(jsonSender)
 			elif clientRequest == 'names':
 				if self.userName in userNames:
 					allNames = "\n".join(userNames)
 					jsonSender = json.dumps({'timestamp': msgTimestamp ,'response': 'names', 'content': allNames}, indent=4)
 					self.connection.send(jsonSender)
-					history.append[jsonSender]
+					history.append(jsonSender)
 			elif clientRequest == 'help':
 				jsonSender = json.dumps({'timestamp': msgTimestamp ,'response': 'help', 'content': self.help}, indent=4)
 				self.connection.send(jsonSender)
-				history.append[jsonSender]
+				history.append(jsonSender)
 			
 			"""
 			Locic for queuing the message sending. Needs a global counter and
