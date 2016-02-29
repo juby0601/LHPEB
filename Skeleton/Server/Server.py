@@ -80,7 +80,7 @@ class ClientHandler(Thread):
 					#TODO: counter should obviously be an int, but the logic to find it might be hard
 					jsonSender = json.dumps({'timestamp': msgTimestamp, 'sender':self.userName, 'response': 'Message', 'content': jsonParser['content']}, indent=4)
 					for connection in connections:
-						self.connection.send(jsonSender)
+						connection.send(jsonSender)
 				history.append(jsonSender)
 			elif clientRequest == 'names':
 				if self.userName in userNames:

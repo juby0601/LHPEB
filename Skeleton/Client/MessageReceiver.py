@@ -20,8 +20,11 @@ class MessageReceiver(Thread):
 				data = self.connection.recv(4096)
 			except:
 				print 'Connection lost'
-				break
-			jsonObject = json.loads(data)
+				break				
+			try:
+				jsonObject = json.loads(data)
+			except:
+				#Do nothing
 			if 'sender' in jsonObject:
 				print jsonObject['sender']
 			if 'timestamp' in jsonObject:
