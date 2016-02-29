@@ -12,10 +12,11 @@ class MessageReceiver(Thread):
     def __init__(self, connection):
 		super(MessageReceiver, self).__init__()
 		self.connection = connection
+		self.daemon = True
 		
     def run(self):
         while True:
-			try:	
+			try:
 				data = self.connection.recv(4096)
 			except:
 				print 'Connection lost'
@@ -29,3 +30,6 @@ class MessageReceiver(Thread):
 				print jsonObject['response']
 			if 'content' in jsonObject:
 				print jsonObject['content']
+	
+	def stop(self):
+		self.daemon = False
