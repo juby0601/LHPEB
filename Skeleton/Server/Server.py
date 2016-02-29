@@ -64,12 +64,14 @@ class ClientHandler(Thread):
 					self.connection.close()
 					break
 			elif clientRequest == 'msg':
-				#TODO: If client not logged in, send back: "error: not logged in"
-
-				#TODO: counter should obviously be an int, but the logic to find it might be hard
-				counter = "Nr of active connections to clients" 
-				jsonMessage = json.dump({'timestamp': msgTimestamp, 'content': jsonParser['content']})
-				messageQueue.append([jsonParser, counter])
+				if(self.userName not in userNames):
+					jsonSender = json.dumps({'timestamp': msgTimestamp, 'reponse': 'Error', 'content': 'Not logged in'}, indent=4)
+				else:
+					#TODO: counter should obviously be an int, but the logic to find it might be hard
+					counter = "Nr of active connections to clients" 
+					jsonSender = json.dumps({'timestamp': msgTimestamp, 'sender':jsonParser['sender'], 'reponse': 'Message', 'content': jsonParser['content']}, indent=4)
+					messageQueue.append([jsonParser, counter])
+				self.connection.send(jsonSender)
 			elif clientRequest == 'names':
 				if self.userName in userNames:
 					allNames = "\n".join(userNames)
@@ -98,6 +100,8 @@ if __name__ == "__main__":
 	serverSocket = socket(AF_INET,SOCK_STREAM)
 	serverSocket.bind(('',PORT))
 	serverSocket.listen(100)
+	threadCounter = 0
 	while True:
 		connection, addr = serverSocket.accept()
+		threadCounter += 1
 		ClientHandler(connection).start()
