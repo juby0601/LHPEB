@@ -33,7 +33,6 @@ class MessageReceiver(Thread):
 				print jsonObject['response']
 			if 'content' in jsonObject:
 				print jsonObject['content']
-			print 'Request type:'
 	
 	def stop(self):
 		self.daemon = False

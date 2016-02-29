@@ -9,11 +9,12 @@ import time
 Variables and functions that must be used by all the ClientHandler objects
 must be written here (e.g. a dictionary for connected clients)
 """
-port = "12000"
 messageQueue = []
 history = []
 userNames = []
+ipAdresses = []
 blackList = ["PJ", "PER", "Per", "pj"]
+banList = []
 counter = 0
 
 connections = []
@@ -27,9 +28,10 @@ class ClientHandler(Thread):
 	only connected clients, and not the server itself. If you want to write
 	logic for the server, you must write it outside this class
 	"""
-	def __init__(self, connection):
+	def __init__(self, connection,addr):
 		super(ClientHandler, self).__init__()
 		self.connection = connection
+		self.addr = addr
 	
 	def run(self):
 		self.userName = ''
@@ -75,6 +77,7 @@ class ClientHandler(Thread):
 								self.connection.send(jsonSender)
 								userNames.append(jsonParser['content'])
 								connections.append(self.connection)
+								ipAdresses.append(self.addr[0])
 								self.userName = jsonParser['content']
 								if history:
 									histories = "\n".join(history)
@@ -88,6 +91,7 @@ class ClientHandler(Thread):
 					self.connection.send(jsonSender);
 					history.append(jsonSender)
 					userNames.pop(userNames.index(self.userName))
+					ipAdresses.remove(self.addr[0])
 					self.connection.close()
 					connections.remove(self.connection)
 					break
@@ -124,21 +128,22 @@ class ClientHandler(Thread):
 def ban():
 	while True:
 		ban = raw_input("Ban: ")
-		blackList.append(ban)
-		try:
-			index = userNames.index(ban)
-		except:
-			pass
-		tempCon = connections.pop(index)
-		jsonSender = json.dumps({'timestamp': time.ctime(), 'content': "You've been banned"}, indent=4)
-		tempCon.send(jsonSender);
-		history.append(jsonSender)
-		userNames.pop(index)
-		tempCon.close()
-		print tempCon
-
-
-
+		if ban == 'Ban list':
+			print blackList
+		else:
+			try:
+				index = userNames.index(ban)
+				tempCon = connections.pop(index)
+				tempIp = ipAdresses.pop(index)
+				banList.append(tempIp)
+				blackList.append(ban)
+				jsonSender = json.dumps({'timestamp': time.ctime(), 'content': "You've been banned"}, indent=4)
+				tempCon.send(jsonSender);
+				history.append(jsonSender)
+				userNames.pop(index)
+				tempCon.close()
+			except:
+				print 'Not a user'
 
 if __name__ == "__main__":
 	"""
@@ -147,7 +152,7 @@ if __name__ == "__main__":
 
 	No alterations are necessary
 	"""
-	HOST, PORT = '78.91.44.102', 9998
+	HOST, PORT = 'localhost', 9998
 	print 'Server running...'
 	serverSocket = socket(AF_INET,SOCK_STREAM)
 	serverSocket.bind(('',PORT))
@@ -157,8 +162,11 @@ if __name__ == "__main__":
 	thread.start()
 
 	while True:
-
 		connection, addr = serverSocket.accept()
-		ClientHandler(connection).start()
+		if addr[0] in banList:
+			jsonSender = json.dumps({'timestamp': time.ctime(), 'content': "You've IP been banned"}, indent=4)
+			connection.send(jsonSender)
+			connection.close()
+		ClientHandler(connection, addr).start()
 
 
