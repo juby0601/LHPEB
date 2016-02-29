@@ -8,7 +8,7 @@ Variables and functions that must be used by all the ClientHandler objects
 must be written here (e.g. a dictionary for connected clients)
 """
 port = "12000"
-messageQueue = []	
+messageQueue = []
 history = []
 userNames = []
 counter = 0
@@ -26,6 +26,7 @@ class ClientHandler(SocketServer.BaseRequestHandler):
         self.port = self.client_address[1]
         self.connection = self.request
 		self.userName = ''
+		self.help = 'login <username> - log in with the given username\nlogout - log out\nmsg <message> - send message\nnames - list users in chat\nhelp - view help text';
         # Loop that listens for messages from the client
 
         #Local
@@ -42,23 +43,31 @@ class ClientHandler(SocketServer.BaseRequestHandler):
 					jsonSender = json.dumps({'timestamp': msgTimestamp, 'reponse': 'Error', 'content': 'Username already exists'}, indent=4)
 					self.connection.send(jsonSender);
 				else
+					validMessage = 1
 					for c in jsonParser['content']:
 						if ord(c) > 122 and ord(c) < 65:
 							jsonSender = json.dumps({'timestamp': msgTimestamp, 'reponse': 'Error', 'content': 'Invalid username'}, indent=4)
 							self.connection.send(jsonSender);
+							validMessage = 0
 							break
-					jsonSender = json.dumps({'timestamp': msgTimestamp, 'Sender':jsonParser['content'] ,'reponse': 'login', 'content': 'Succesfully logged in'}, indent=4)
-					self.connection.send(jsonSender);
+					if validMessage == 1:		
+						jsonSender = json.dumps({'timestamp': msgTimestamp, 'Sender':jsonParser['content'] ,'reponse': 'login', 'content': 'Succesfully logged in'}, indent=4)
+						self.connection.send(jsonSender);
+						userNames.append(jsonParser['content'])
 				history.append[jsonSender]
 			elif clientRequest == 'logout':
 				
 			elif clientRequest == 'msg':
 				
 			elif clientRequest == 'names':
-				
+				allNames = "\n".join(userNames)
+				jsonSender = json.dumps({'timestamp': msgTimestamp ,'reponse': 'names', 'content': allNames}, indent=4)
+				self.connection.send(jsonSender)
+				history.append[jsonSender]
 			elif clientRequest == 'help':
-				
-
+				jsonSender = json.dumps({'timestamp': msgTimestamp ,'reponse': 'help', 'content': self.help}, indent=4)
+				self.connection.send(jsonSender)
+				history.append[jsonSender]
             
 
             """
