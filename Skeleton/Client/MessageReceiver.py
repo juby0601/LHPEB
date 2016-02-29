@@ -12,7 +12,7 @@ class MessageReceiver(Thread):
     def __init__(self, connection):
 		super(MessageReceiver, self).__init__()
 		self.connection = connection
-
+		
     def run(self):
         while True:
 			try:	

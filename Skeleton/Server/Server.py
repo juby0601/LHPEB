@@ -36,7 +36,6 @@ class ClientHandler(Thread):
 			jsonParser = json.loads(receivedString)
 			clientRequest = jsonParser['request']
 			if clientRequest == 'login':
-				print clientRequest
 				if jsonParser['content'] in userNames:
 					jsonSender = json.dumps({'timestamp': msgTimestamp, 'response': 'Error', 'content': 'Username already exists'}, indent=4)
 					self.connection.send(jsonSender)
@@ -65,11 +64,11 @@ class ClientHandler(Thread):
 					break
 			elif clientRequest == 'msg':
 				if(self.userName not in userNames):
-					jsonSender = json.dumps({'timestamp': msgTimestamp, 'reponse': 'Error', 'content': 'Not logged in'}, indent=4)
+					jsonSender = json.dumps({'timestamp': msgTimestamp, 'response': 'Error', 'content': 'Not logged in'}, indent=4)
 				else:
 					#TODO: counter should obviously be an int, but the logic to find it might be hard
 					counter = "Nr of active connections to clients" 
-					jsonSender = json.dumps({'timestamp': msgTimestamp, 'sender':jsonParser['sender'], 'reponse': 'Message', 'content': jsonParser['content']}, indent=4)
+					jsonSender = json.dumps({'timestamp': msgTimestamp, 'sender':jsonParser['sender'], 'response': 'Message', 'content': jsonParser['content']}, indent=4)
 					messageQueue.append([jsonParser, counter])
 				self.connection.send(jsonSender)
 				history.append(jsonSender)
@@ -84,10 +83,6 @@ class ClientHandler(Thread):
 				self.connection.send(jsonSender)
 				history.append(jsonSender)
 		print 'LOL'	
-			"""
-			Locic for queuing the message sending. Needs a global counter and
-			a local threadspecific counter
-			"""
 
 if __name__ == "__main__":
 	"""

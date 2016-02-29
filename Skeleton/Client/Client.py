@@ -15,6 +15,7 @@ class Client:
 
 	def disconnect(self):
 		self.connection.close()
+		self.messageReceiver.stop()
 		
 	def rawInput(self):
 		request = raw_input("Request type: ");
@@ -22,8 +23,8 @@ class Client:
 		self.jsonObject = json.dumps({'request': request, 'content': content}, indent=4)
 
 	def receiveMessage(self):
-		messageReceiver = MessageReceiver(self.connection)
-		messageReceiver.start()
+		self.messageReceiver = MessageReceiver(self.connection)
+		self.messageReceiver.start()
 
 	def send(self):
 		self.connection.send(self.jsonObject)
@@ -39,3 +40,4 @@ if __name__ == '__main__':
 		if disconnection == 'c':
 			client.disconnect()
 			break
+	print 'wasup'
