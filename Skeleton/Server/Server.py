@@ -5,10 +5,6 @@ from socket import *
 import json
 import time
 
-"""
-Variables and functions that must be used by all the ClientHandler objects
-must be written here (e.g. a dictionary for connected clients)
-"""
 messageQueue = []
 history = []
 userNames = []
@@ -16,7 +12,6 @@ ipAdresses = []
 blackList = []
 banList = []
 counter = 0
-
 connections = []
 
 
@@ -56,7 +51,6 @@ class ClientHandler(Thread):
 					jsonSender = json.dumps({'timestamp': msgTimestamp, 'response': 'Error', 'content': 'Allready logged in'}, indent=4)
 					self.connection.send(jsonSender)
 				else:
-
 					if jsonParser['content'] in userNames:
 						jsonSender = json.dumps({'timestamp': msgTimestamp, 'response': 'Error', 'content': 'Username already exists'}, indent=4)
 						self.connection.send(jsonSender)
@@ -115,14 +109,20 @@ class ClientHandler(Thread):
 					jsonSender = json.dumps({'timestamp': msgTimestamp ,'response': 'names', 'content': allNames}, indent=4)
 					self.connection.send(jsonSender)
 					history.append(jsonSender)
+				else:
+					jsonSender = json.dumps({'timestamp': msgTimestamp , 'content': 'Not logged in'}, indent=4)
+					self.connection.send(jsonSender)
 			elif clientRequest == 'help':
 				jsonSender = json.dumps({'timestamp': msgTimestamp ,'response': 'help', 'content': self.help}, indent=4)
 				self.connection.send(jsonSender)
-				history.append(jsonSender)
 			elif clientRequest == 'history':
-				histories = "\n".join(history)
-				jsonSender = json.dumps({'timestamp': msgTimestamp ,'response': 'histories', 'content': histories}, indent=4)
+				for histories in history:
+					self.connection.send(histories)
+					time.sleep(0.3)
+			else:
+				jsonSender = json.dumps({'timestamp': msgTimestamp ,'response': 'List of accepted inputs ', 'content': self.help}, indent=4)
 				self.connection.send(jsonSender)
+
 
 
 def ban():
